@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartClass - Lesson 4 - Objects, Jobs, and Numbers</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap');
+
+        :root {
+            --navy-tech: #1A1F36;
+            --electric-mint: #2CE6B8;
+            --sun-coral: #F85F73;
+            --blanco-nitido: #F9FAFC;
+            --gris-suave: #E5E7EB;
+            --gris-medio: #D1D5DB;
+            --gris-oscuro: #6B7280;
+            --verde-exito: #10B981; 
+            --verde-exito-oscuro: #059669; 
+            --rojo-error: #EF4444;
+            --amarillo-info: #F59E0B;
+            --azul-claro-fondo: #EFF6FF;
+            --texto-principal: #1F2937;
+            --texto-secundario: #4B5563;
+            
+            --font-principal-fallback: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            --font-principal: 'Outfit', var(--font-principal-fallback);
+            --font-titulos: 'Montserrat', var(--font-principal-fallback);
+
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            
+            --sidebar-width-desktop: 300px;
+            --header-height: 70px; 
+        }
+
+        /* Animaciones (sin cambios) */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulseFeedback { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
+        @keyframes tada { 0% {transform: scale(1);} 10%, 20% {transform: scale(0.9) rotate(-3deg);} 30%, 50%, 70%, 90% {transform: scale(1.1) rotate(3deg);} 40%, 60%, 80% {transform: scale(1.1) rotate(-3deg);} 100% {transform: scale(1) rotate(0);} }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(248, 95, 115, 0.6); } 70% { box-shadow: 0 0 0 12px rgba(248, 95, 115, 0); } 100% { box-shadow: 0 0 0 0 rgba(248, 95, 115, 0); } }
+        @keyframes modal-pop { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+
+
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-principal);
+            margin: 0;
+            background-color: var(--blanco-nitido);
+            color: var(--texto-principal);
+            line-height: 1.7;
+            display: flex; 
+            flex-direction: column; 
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            padding-top: var(--header-height);
+        }
+
+        header {
+            background-color: var(--navy-tech);
+            color: var(--blanco-nitido);
+            padding: 0 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between; 
+            height: var(--header-height);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1002;
+            box-shadow: var(--shadow-md);
+        }
+        .logo { font-family: var(--font-titulos); font-size: 1.8em; font-weight: 700; letter-spacing: 0.5px; display: flex; align-items: center; }
+        .logo .icon { font-size: 0.9em; margin-right: 8px; color: var(--electric-mint); }
+        .mobile-menu-toggle { display: none; font-size: 1.8em; color: var(--blanco-nitido); background: none; border: none; cursor: pointer; padding: 10px; }
+
+        .main-wrapper { display: flex; flex-grow: 1; }
+
+        .sidebar {
+            width: var(--sidebar-width-desktop);
+            background-color: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--gris-suave);
+            flex-shrink: 0;
+            position: sticky; 
+            top: var(--header-height);
+            height: calc(100vh - var(--header-height));
+        }
+        .sidebar-header-info { padding: 20px; border-bottom: 1px solid var(--gris-suave); flex-shrink: 0; }
+        .sidebar-header-info h1.lesson-title-sidebar { font-family: var(--font-titulos); font-size: 1.3em; color: var(--navy-tech); margin: 0 0 10px 0; font-weight: 600; line-height: 1.3; }
+        
+        .progress-bar-wrapper { display: flex; align-items: center; gap: 10px; }
+        .progress-bar-container-sidebar { flex-grow: 1; background-color: var(--gris-medio); border-radius: 15px; margin-bottom: 0; height: 20px; position: relative; overflow: hidden; }
+        .progress-bar-sidebar { width: 0%; height: 100%; background-color: var(--verde-exito); border-radius: 15px; transition: width 0.7s cubic-bezier(0.25, 0.1, 0.25, 1); }
+        .progress-percentage-text { font-size: 0.9em; font-weight: 600; color: var(--verde-exito-oscuro); min-width: 40px; text-align: right; }
+
+        .sidebar-menu-container { padding: 15px; overflow-y: auto; flex-grow: 1; }
+        .sidebar-menu-container h3 { font-family: var(--font-titulos); color: var(--gris-oscuro); font-size: 0.9em; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 0; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid var(--gris-medio); display: flex; align-items: center; }
+        .sidebar-menu-container h3 .icon { font-size: 1.1em; color: var(--navy-tech); margin-right: 8px; }
+        #lessonSectionsMenu { list-style: none; padding: 0; margin: 0; }
+        #lessonSectionsMenu li a { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; text-decoration: none; color: var(--texto-secundario); border-radius: 6px; margin-bottom: 4px; transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease; font-weight: 500; font-size: 0.9em; }
+        #lessonSectionsMenu li a .menu-item-text { display: flex; align-items: center; flex-grow: 1; }
+        #lessonSectionsMenu li a .menu-icon { margin-right: 10px; font-size: 1.1em; color: var(--gris-oscuro); width: 20px; text-align: center; transition: color 0.2s ease; }
+        #lessonSectionsMenu li a .completed-check { font-size: 1.1em; color: var(--verde-exito-oscuro); margin-left: 8px; font-weight: bold; opacity: 0; transition: opacity 0.3s ease; }
+        #lessonSectionsMenu li a.step-completed .completed-check { opacity: 1; }
+        #lessonSectionsMenu li a:hover { background-color: var(--gris-suave); color: var(--navy-tech); }
+        #lessonSectionsMenu li a:hover .menu-icon { color: var(--navy-tech); }
+        #lessonSectionsMenu li a.active { background-color: var(--electric-mint); color: var(--navy-tech) !important; font-weight: 600; box-shadow: var(--shadow-sm); }
+        #lessonSectionsMenu li a.active .menu-icon { color: var(--navy-tech); }
+        #lessonSectionsMenu li a.active.step-completed .completed-check { color: var(--navy-tech); }
+
+
+        .content-area { flex-grow: 1; padding: 30px; }
+        h2 { font-family: var(--font-titulos); margin-top: 0; margin-bottom: 25px; border-bottom: 3px solid var(--electric-mint); padding-bottom: 10px; font-size: 1.8em; color: var(--navy-tech); display: flex; align-items: center; font-weight: 600; }
+        .content-area > .lesson-step:first-of-type > h2 { margin-top: 0; } 
+        .lesson-step { background-color: #fff; padding: 25px; margin-bottom: 35px; border-radius: 12px; border: 1px solid var(--gris-suave); box-shadow: var(--shadow-md); animation: fadeIn 0.5s ease-out forwards; opacity: 0; }
+        .lesson-step p { color: var(--texto-secundario); font-size: 1.05em; margin-bottom: 15px; font-weight: 400; }
+        .lesson-step ul { list-style: none; padding-left: 0; }
+        
+        .lesson-step ul.grammar-list li { background-color: var(--azul-claro-fondo); padding: 10px 15px; margin-bottom: 8px; border-radius: 6px; border-left: 4px solid var(--electric-mint); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+        .lesson-step ul.grammar-list li .text-content { flex-grow: 1; margin-right: 10px; }
+         .lesson-step ul.grammar-list li .text-content .term-translation { display: block; margin-bottom: 3px; }
+         .lesson-step ul.grammar-list li .text-content .pronoun,
+         .lesson-step ul.grammar-list li .text-content .adjective { font-weight: 600; font-size: 1.05em; }
+        .lesson-step ul.grammar-list li .text-content .pronoun { color: var(--sun-coral); } 
+        .lesson-step ul.grammar-list li .text-content .adjective { color: var(--electric-mint); } 
+        .lesson-step ul.grammar-list li .text-content .translation-grammar { font-size: 0.9em; color: var(--texto-secundario); margin-left: 5px; }
+        .lesson-step ul.grammar-list li .text-content .example-sentence { font-style: italic; color: var(--texto-secundario); font-size: 0.95em; display: block; margin-top: 2px; }
+        .lesson-step ul.grammar-list li button, 
+        .vocab-list-item button { 
+            padding: 5px 8px; font-size: 0.75em; margin-left: 0;
+            background-color: var(--gris-suave); color: var(--texto-secundario);
+            flex-shrink: 0; min-width: auto;
+        }
+        .lesson-step ul.grammar-list li button:hover, 
+        .vocab-list-item button:hover { background-color: var(--gris-medio); color: var(--navy-tech); }
+        .lesson-step ul.grammar-list li button .icon, 
+        .vocab-list-item button .icon { font-size: 1.2em; margin-right: 3px; }
+
+        .living-english-tip { background-color: #fff9eb; border: 1px solid #ffe7ba; border-left: 5px solid var(--amarillo-info); padding: 15px 20px; margin: 25px 0; border-radius: 8px; font-size: 0.98em; line-height: 1.6; box-shadow: var(--shadow-sm); }
+        .living-english-tip strong { color: #b45309; font-weight: 600; display: block; margin-bottom: 5px; }
+        .living-english-tip .icon { color: var(--amarillo-info); font-size: 1.2em; margin-right: 8px; vertical-align: -2px; }
+
+        .phrase-block { background-color: var(--blanco-nitido); border: 1px solid var(--gris-medio); padding: 18px 22px; margin-bottom: 15px; border-radius: 10px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; transition: box-shadow 0.3s ease; }
+        .phrase-block:hover { box-shadow: var(--shadow-sm); }
+        .phrase-text { font-size: 1.35em; margin-bottom: 10px; flex-basis: 100%; color: var(--texto-principal); font-weight: 500; }
+        .phrase-text span.highlight { background-color: #D6EEFF; padding: 0.2em 0.5em; border-radius: 6px; cursor: pointer; transition: background-color 0.2s, color 0.2s, transform 0.2s; margin: 0 3px; display: inline-block; }
+        .phrase-text span.highlight:hover { background-color: var(--electric-mint); color: var(--navy-tech); transform: translateY(-2px); }
+        .phrase-text span.highlight.active { background-color: var(--sun-coral); color: white; transform: scale(1.05); }
+        button, .button-like { font-family: var(--font-principal); background-color: var(--electric-mint); color: var(--navy-tech); border: none; padding: 12px 22px; border-radius: 25px; cursor: pointer; font-size: 1.05em; font-weight: 600; transition: all 0.2s ease-out; margin-top: 10px; display: inline-flex; align-items: center; box-shadow: var(--shadow-sm); text-decoration: none; }
+        button:hover, .button-like:hover { background-color: #23bba0; transform: translateY(-2px) scale(1.02); box-shadow: var(--shadow-md); }
+        button:active, .button-like:active { transform: translateY(0px) scale(0.98); box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
+        button.record-btn { background-color: var(--sun-coral); color: var(--blanco-nitido); }
+        button.record-btn:hover { background-color: #e04f62; }
+        button.record-btn.recording { background-color: #c0392b; animation: pulse 1.2s infinite ease-in-out; }
+        button.mark-completed-btn { background-color: var(--gris-suave); color: var(--texto-secundario); font-size: 0.95em; padding: 10px 18px; font-weight: 500; }
+        button.mark-completed-btn.completed { background-color: var(--verde-exito); color: white; cursor: default; font-weight: 600; }
+        button.mark-completed-btn.completed:hover { background-color: var(--verde-exito); transform: none; box-shadow: var(--shadow-sm); }
+        .icon { font-size: 1.4em; margin-right: 10px; vertical-align: middle; }
+        h2 .icon { font-size: 1.7em; color: var(--electric-mint); }
+        button .icon { font-size: 1.2em; margin-right: 8px; color: inherit; }
+        input[type="text"], textarea { font-family: var(--font-principal); width: calc(100% - 26px); padding: 12px; margin-bottom: 12px; border: 2px solid var(--gris-medio); border-radius: 8px; font-size: 1.1em; box-sizing: border-box; transition: border-color 0.3s ease, box-shadow 0.3s ease; font-weight: 400; }
+        input[type="text"]:focus, textarea:focus { border-color: var(--electric-mint); box-shadow: 0 0 0 3px rgba(44, 230, 184, 0.3); outline: none; }
+        textarea { min-height: 100px; resize: vertical; }
+        .feedback { padding: 15px 20px; margin-top: 12px; border-radius: 10px; font-weight: 500; font-size: 1.1em; text-align: center; animation: pulseFeedback 0.5s ease; border-width: 2px; border-style: solid; }
+        .feedback.success { background-color: #ECFDF5; color: #065F46; border-color: var(--verde-exito); }
+        .feedback.error { background-color: #FEF2F2; color: #991B1B; border-color: var(--rojo-error); }
+        .feedback.info { background-color: #EFF6FF; color: #1E40AF; border-color: #60A5FA; }
+        .grammar-explanation { background-color: var(--azul-claro-fondo); padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid var(--sun-coral); }
+        .grammar-explanation p { font-weight: 500; margin-bottom: 10px; }
+        .grammar-explanation strong { color: var(--navy-tech); font-weight: 700; }
+        .grammar-explanation-grid { display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 20px; }
+        .grammar-explanation-grid .rule { background-color: var(--blanco-nitido); padding: 15px; border-radius: 8px; border: 1px solid var(--gris-medio); box-shadow: var(--shadow-sm); }
+        .grammar-explanation-grid .rule h3 { font-family: var(--font-titulos); margin-top: 0; color: var(--sun-coral); font-size: 1.2em; display: flex; align-items: center;}
+        .grammar-explanation-grid .rule h3 .icon { font-size: 1.2em; margin-right: 8px; color: inherit;}
+        .grammar-explanation-grid .rule p { font-size: 0.95em; color: var(--texto-secundario); margin-bottom: 10px;}
+        .grammar-explanation-grid .rule ul { padding-left: 20px; list-style-type: '✓ '; }
+        .grammar-explanation-grid .rule li { margin-bottom: 5px; color: var(--texto-secundario); font-size: 0.95em; }
+
+        .vocab-list-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; margin-bottom: 8px; background-color: var(--blanco-nitido); border: 1px solid var(--gris-suave); border-radius: 8px; }
+        .vocab-list-item .vocab-word-details { flex-grow: 1; margin-right: 10px;}
+        .vocab-list-item .vocab-word-details strong { font-weight: 600; font-size: 1.1em; display: block; }
+        .vocab-list-item .vocab-word-details .translation { color: var(--texto-secundario); font-size: 0.9em; font-style: italic; display:block; }
+        .vocab-list-item .vocab-word-details .pronunciation-guide { 
+            color: var(--sun-coral); font-size: 0.9em; font-weight: 500; 
+            display: block; margin-top: 4px;
+        }
+
+        .reading-text-block { background-color: #fffaf0; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ffe7cc; line-height: 1.8; }
+        .reading-text-block p { font-weight: 400; }
+        .reading-text-block .highlight-demonstrative { background-color: var(--electric-mint); color: var(--navy-tech); padding: 0.1em 0.3em; border-radius: 3px; font-weight: 600; cursor: pointer; }
+        
+        #section-summaryTips { background-color: var(--azul-claro-fondo); }
+        #section-summaryTips h2 .icon { color: var(--amarillo-info); }
+        #section-summaryTips ul { list-style: none; padding-left: 0; }
+        #section-summaryTips ul li {
+            background-color: transparent; border-left: 4px solid var(--amarillo-info); 
+            padding: 10px 15px 10px 35px; 
+            margin-bottom: 10px; font-size: 1.05em; position: relative; 
+        }
+        #section-summaryTips ul li::before { 
+            content: "💡"; color: var(--amarillo-info);
+            margin-right: 10px; font-size: 1.2em; 
+            position: absolute; left: 8px; top: 50%; transform: translateY(-50%); 
+        }
+
+        .quiz-question { margin-bottom: 25px; padding: 20px; background-color: var(--blanco-nitido); border-radius: 10px; border: 1px solid var(--gris-suave); box-shadow: var(--shadow-sm); }
+        .quiz-question p.question-text { font-weight: 600; margin-bottom: 15px; font-size: 1.15em; color: var(--navy-tech); }
+        .quiz-options label { display: block; margin-bottom: 10px; padding: 14px 18px; border: 2px solid var(--gris-medio); border-radius: 25px; cursor: pointer; transition: all 0.2s ease-out; font-size: 1.05em; font-weight: 400; }
+        .quiz-options label:hover { background-color: #E0F2FE; border-color: var(--electric-mint); transform: translateX(3px); }
+        .quiz-options input[type="radio"] { margin-right: 12px; vertical-align: middle; transform: scale(1.2); }
+        .quiz-options label.correct { background-color: #D1FAE5 !important; border-color: var(--verde-exito) !important; color: #047857; font-weight: 600; }
+        .quiz-options label.incorrect { background-color: #FEE2E2 !important; border-color: var(--rojo-error) !important; color: #B91C1C; font-weight: 500; }
+        .explanation { font-size: 0.95em; margin-top: 10px; padding: 10px 12px; border-radius: 6px; background-color: #FFFBEB; color: #713F12; border: 1px solid var(--amarillo-info); font-weight: 400; }
+        .explanation .icon { font-size: 1.2em; color: var(--amarillo-info); margin-right: 5px; }
+        
+        .listening-exercise .conversation { margin-bottom: 20px; padding: 20px; border: 1px dashed var(--gris-medio); border-radius: 10px; background-color: #fdfdff; }
+        .listening-exercise .speaker { font-weight: 600; color: var(--navy-tech); margin-right: 5px; }
+        input.fill-in-blank-input { 
+            font-family: var(--font-principal); margin: 0 5px; border: 2px solid var(--electric-mint); 
+            border-radius: 6px; padding: 6px 8px; font-size: 1em; 
+            background-color: #F0FFFF; width: auto; min-width: 60px;
+            text-align: center; font-weight: 400; 
+        }
+        input.fill-in-blank-input::placeholder { 
+            color: var(--gris-oscuro);
+            font-style: normal;
+            font-weight: 300; 
+            font-size: 0.9em;
+        }
+
+        .ai-interaction { margin-top: 35px; padding: 25px; border: 2px dashed var(--sun-coral); border-radius: 12px; background-color: #FFF7F5; }
+        .ai-interaction h2 .icon { color: var(--sun-coral); }
+        .ai-interaction textarea { border-color: var(--sun-coral); font-family: var(--font-principal); }
+        .ai-interaction #aiResponse { margin-top: 15px; padding: 18px; background-color: var(--blanco-nitido); border: 1px solid var(--gris-suave); border-radius: 10px; min-height: 70px; white-space: pre-wrap; font-family: var(--font-principal); font-size: 1.05em; color: var(--texto-secundario); line-height: 1.6; font-weight: 400; }
+        .ai-interaction .ai-buttons-container { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .ai-interaction button { background-color: var(--sun-coral); color: var(--blanco-nitido); font-family: var(--font-principal); }
+        .ai-interaction button:hover { background-color: #dd5265; }
+        .ai-interaction button.send-text-btn { background-color: var(--gris-suave); color: var(--texto-secundario); font-size: 0.9em; padding: 10px 18px; }
+        .ai-interaction button.send-text-btn:hover { background-color: var(--gris-medio); }
+        .ai-interaction button.recording { animation: pulse 1.2s infinite ease-in-out; }
+
+        
+        /* Estilos de la Ventana Emergente (Modal) */
+        #completionOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(26, 31, 54, 0.8); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        #completionModal { background: white; padding: 40px; border-radius: 16px; text-align: center; box-shadow: var(--shadow-lg); animation: modal-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; max-width: 500px; width: 90%; }
+        #completionModal .icon-modal { font-size: 4em; display: inline-block; animation: tada 1s; content: '🎉'; margin-bottom: 20px; }
+        #completionModal h2 { font-size: 2em; color: var(--navy-tech); border: none; margin-bottom: 10px; justify-content: center; }
+        #completionModal p { font-size: 1.2em; color: var(--texto-secundario); margin-bottom: 25px; }
+        #completionModal button { background-color: var(--navy-tech); color: white; }
+
+        @media (max-width: 850px) {
+            body { padding-top: 0; }
+            header { position: static; height: auto; padding: 10px 15px; }
+            .logo { font-size: 1.6em; margin: 0; }
+            .mobile-menu-toggle { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; position: absolute; left: 15px; top: 50%; transform: translateY(-50%); z-index: 1003;}
+            header .logo { position: absolute; left: 50%; transform: translateX(-50%); }
+            .header-placeholder { display: none; }
+            .main-wrapper { flex-direction: column; margin-top: 0; height: auto; }
+            .sidebar {
+                width: 85%; max-width: 280px; position: fixed; 
+                top: 0; left: -100%; bottom: 0;
+                z-index: 1001; 
+                background-color: #f8f9fa;
+                transition: left 0.3s ease-in-out;
+                border-right: 1px solid var(--gris-medio); 
+                box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+                overflow-y: auto; 
+            }
+            .sidebar.active { left: 0; }
+            .sidebar-header-info { padding: 20px 15px; text-align: left; }
+            .sidebar-header-info h1.lesson-title-sidebar { font-size: 1.1em; }
+            .progress-bar-container-sidebar { height: 14px; }
+            .sidebar-menu-container { padding: 15px; flex-grow: 1;}
+            .content-area { padding: 20px 15px; }
+            .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; }
+            .sidebar.active ~ .overlay { display: block; }
+            h2 { font-size: 1.6em; }
+            .grammar-explanation-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header id="appHeader">
+        <button class="mobile-menu-toggle" aria-label="Toggle menu" onclick="toggleMobileMenu()">☰</button>
+        <div class="logo">SMARTCLASS</div>
+        <div style="width: 48px;" class="header-placeholder"></div> 
+    </header>
+
+    <div class="main-wrapper">
+        <aside class="sidebar" id="lessonSidebar">
+            <div class="sidebar-header-info">
+                <h1 class="lesson-title-sidebar">Lesson 4 - Objects, Jobs, and Numbers</h1>
+                <div class="progress-bar-wrapper">
+                    <div class="progress-bar-container-sidebar">
+                        <div class="progress-bar-sidebar" id="progressBarSidebar"></div>
+                    </div>
+                    <span class="progress-percentage-text" id="progressTextSidebar">0%</span>
+                </div>
+            </div>
+            <div class="sidebar-menu-container">
+                <h3><span class="icon" style="font-size: 1em;">📖</span> Contenido</h3>
+                <nav>
+                    <ul id="lessonSectionsMenu">
+                        <!-- Generado por JS -->
+                    </ul>
+                </nav>
+            </div>
+        </aside>
+         <div class="overlay" id="mobileMenuOverlay" onclick="toggleMobileMenu()"></div>
+
+        <main class="content-area" id="contentArea">
+            <p style="font-size: 1.2em; text-align: center; color: var(--texto-secundario); margin-bottom: 30px; font-weight: 500;">
+                ¡Hola de nuevo! 👋 En esta lección, aprenderás a señalar cosas, hablar de profesiones y usar números. ¡Prepárate para expandir tu mundo en inglés! 🌎
+            </p>
+
+            <!-- ====================================================================== -->
+            <!-- ======================= INICIO SECCIÓN GRAMÁTICA DEMOSTRATIVOS ======================= -->
+            <!-- ====================================================================== -->
+            <section id="section-grammarDemonstratives" class="lesson-step" data-step-id="grammarDemonstratives" data-title="Gramática: This, That, These, Those" data-icon="👆" style="animation-delay: 0.1s;">
+                <h2><span class="icon">👆</span> Gramática: Señalando el Mundo</h2>
+                <p>Para indicar dónde están las cosas, usamos unas palabras mágicas llamadas pronombres demostrativos. ¡Son como el dedo que apunta!</p>
+                <div class="grammar-explanation">
+                    <p>Usamos <strong>this / that / these / those</strong> para indicar si las cosas están cerca (near) o lejos (far).</p>
+                    <ul class="grammar-list">
+                        <li><div class="text-content"><span class="term-translation"><span class="pronoun">This</span><span class="translation-grammar">(esto, este, esta)</span></span> <span class="example-sentence">Para 1 cosa cerca. <em>This is my favorite book.</em> (Este es mi libro favorito.)</span></div> <button onclick="speakPhrase('This. This is my favorite book.', 'en-US')" title="Escuchar 'This' y ejemplo"><span class="icon">🔊</span></button></li>
+                        <li><div class="text-content"><span class="term-translation"><span class="pronoun">That</span><span class="translation-grammar">(eso, ese, esa)</span></span> <span class="example-sentence">Para 1 cosa lejos. <em>That is my notebook.</em> (Ese es mi cuaderno.)</span></div> <button onclick="speakPhrase('That. That is my notebook.', 'en-US')" title="Escuchar 'That' y ejemplo"><span class="icon">🔊</span></button></li>
+                        <li><div class="text-content"><span class="term-translation"><span class="pronoun">These</span><span class="translation-grammar">(estos, estas)</span></span> <span class="example-sentence">Para 2 o más cosas cerca. <em>These are my pencils.</em> (Estos son mis lápices.)</span></div> <button onclick="speakPhrase('These. These are my pencils.', 'en-US')" title="Escuchar 'These' y ejemplo"><span class="icon">🔊</span></button></li>
+                        <li><div class="text-content"><span class="term-translation"><span class="pronoun">Those</span><span class="translation-grammar">(esos, esas)</span></span> <span class="example-sentence">Para 2 o más cosas lejos. <em>Those are my markers.</em> (Esos son mis marcadores.)</span></div> <button onclick="speakPhrase('Those. Those are my markers.', 'en-US')" title="Escuchar 'Those' y ejemplo"><span class="icon">🔊</span></button></li>
+                    </ul>
+                </div>
+                <p style="font-weight: 500;"><strong>¡Reto de Puntería!</strong> Completa las frases con el pronombre correcto.</p>
+                <div id="demonstratives_practice"></div>
+                <button onclick="checkDemonstratives()"><span class="icon">✍️</span> Revisar Mis Respuestas</button>
+                <div id="demonstratives_feedback" class="feedback" style="display:none;"></div>
+                <div class="living-english-tip">
+                    <span class="icon">🚀</span><strong>Living English:</strong> No solo se usa para objetos. Puedes decir <button onclick="speakPhrase('This is my friend, Maria.', 'en-US')" style="all:unset; cursor:pointer; text-decoration:underline;">"This is my friend, Maria"</button> (presentándola a tu lado) o <button onclick="speakPhrase('I love that song!', 'en-US')" style="all:unset; cursor:pointer; text-decoration:underline;">"I love that song!"</button> (si suena en la radio). ¡Es súper útil!
+                </div>
+                <button class="mark-completed-btn" id="completeGrammarDemonstrativesBtn" onclick="markStepCompleted('grammarDemonstratives', this)"><span class="icon">✔️</span> Entendí los Demostrativos</button>
+            </section>
+            
+            <!-- ====================================================================== -->
+            <!-- ======================= INICIO SECCIÓN VOCABULARIO NÚMEROS ======================= -->
+            <!-- ====================================================================== -->
+            <section id="section-vocabNumbers" class="lesson-step" data-step-id="vocabNumbers" data-title="Vocabulario: Los Números" data-icon="🔢" style="animation-delay: 0.2s;">
+                <h2><span class="icon">🔢</span> Vocabulario: Los Números se Hacen Grandes</h2>
+                <p>Ya sabes contar, ¡pero ahora vamos a llegar hasta mil! Escucha y repite estos números. ¡Te servirán para precios, direcciones y mucho más!</p>
+                <div id="numbersVocabularyContainer"></div>
+                <hr style="margin: 25px 0;">
+                <h3 style="font-family: var(--font-titulos); color: var(--navy-tech);">Números Ordinales: El Orden Importa 🥇🥈🥉</h3>
+                <p>Los usamos para fechas, secuencias o ganadores. La mayoría termina en "-th", ¡pero cuidado con los 3 primeros!</p>
+                <div id="ordinalNumbersVocabularyContainer"></div>
+                <div class="living-english-tip">
+                    <span class="icon">🚀</span><strong>Living English:</strong> Para los cumpleaños, siempre usamos números ordinales. No dices "I am 20 on May 5", sino <button onclick="speakPhrase('My birthday is on May fifth.', 'en-US')" style="all:unset; cursor:pointer; text-decoration:underline;">"My birthday is on May 5th (fifth)"</button>. ¡Un truco que te hará sonar más natural!
+                </div>
+                <button class="mark-completed-btn" id="completeVocabNumbersBtn" onclick="markStepCompleted('vocabNumbers', this)"><span class="icon">✔️</span> Repasé los Números</button>
+            </section>
+            
+            <!-- ====================================================================== -->
+            <!-- ======================= INICIO SECCIÓN GRAMÁTICA ARTÍCULOS ======================= -->
+            <!-- ====================================================================== -->
+            <section id="section-grammarArticles" class="lesson-step" data-step-id="grammarArticles" data-title="Gramática: a, an, the" data-icon="📖" style="animation-delay: 0.3s;">
+                <h2><span class="icon">📖</span> Gramática: Artículos (a, an, the)</h2>
+                <p>Estas tres palabritas son cruciales. Nos dicen si hablamos de "un/una" objeto cualquiera o de "el/la" objeto específico.</p>
+                <div class="grammar-explanation-grid" id="articles-grid">
+                    <!-- Las reglas de 'a', 'an', 'the' se generarán aquí con JS -->
+                </div>
+                <p style="font-weight: 500;"><strong>¡Mini Reto de Artículos!</strong> Completa con el artículo correcto.</p>
+                <div id="articles_practice"></div>
+                <button onclick="checkArticles()"><span class="icon">✍️</span> Revisar Artículos</button>
+                <div id="articles_feedback" class="feedback" style="display:none;"></div>
+                <div class="living-english-tip">
+                    <span class="icon">🚀</span><strong>Living English:</strong> El truco está en el *sonido*, no en la letra. <button onclick="speakPhrase('an hour', 'en-US')" style="all:unset; cursor:pointer; text-decoration:underline;">"an hour"</button> (la 'h' es muda, suena como vocal). <button onclick="speakPhrase('a university', 'en-US')" style="all:unset; cursor:pointer; text-decoration:underline;">"a university"</button> (empieza con sonido /juː/, como consonante). ¡Escucha con atención!
+                </div>
+                <button class="mark-completed-btn" id="completeGrammarArticlesBtn" onclick="markStepCompleted('grammarArticles', this)"><span class="icon">✔️</span> Entendí los Artículos</button>
+            </section>
+            
+            <!-- ====================================================================== -->
+            <!-- ======================= INICIO SECCIÓN VOCABULARIO OCUPACIONES ======================= -->
+            <!-- ====================================================================== -->
+            <section id="section-vocabOccupations" class="lesson-step" data-step-id="vocabOccupations" data-title="Vocabulario: Ocupaciones" data-icon="👷" style="animation-delay: 0.4s;">
+                <h2><span class="icon">👷</span> Vocabulario: ¿A Qué te Dedicas? (Occupations)</h2>
+                <p>Aprende a nombrar diferentes trabajos y profesiones. ¡Quizás encuentres el trabajo de tus sueños en esta lista!</p>
+                <div id="occupationsVocabularyContainer"></div>
+                <hr style="margin: 25px 0;">
+                <p style="font-weight: 500;"><strong>¡Adivina la Profesión!</strong> Responde las preguntas usando un artículo (a/an) y la ocupación correcta.</p>
+                <div id="occupations_practice"></div>
+                <button onclick="checkOccupations()"><span class="icon">✍️</span> Revisar Profesiones</button>
+                <div id="occupations_feedback" class="feedback" style="display:none;"></div>
+
+                <div class="living-english-tip">
+                    <span class="icon">🚀</span><strong>Living English:</strong> Cuando hablas de la profesión de alguien, ¡casi siempre usas "a" o "an"! Por ejemplo: <button onclick="speakPhrase('My mom is a doctor.', 'en-US')" style="all:unset; cursor:pointer; text-decoration:underline;">"My mom is a doctor."</button> o <button onclick="speakPhrase('He wants to be an actor.', 'en-US')" style="all:unset; cursor:pointer; text-decoration:underline;">"He wants to be an actor."</button>. En español no lo decimos ("Mi mamá es doctora"), ¡pero en inglés es fundamental!
+                </div>
+                <button class="mark-completed-btn" id="completeVocabOccupationsBtn" onclick="markStepCompleted('vocabOccupations', this)"><span class="icon">✔️</span> Repasé Ocupaciones</button>
+            </section>
+
+            <!-- ====================================================================== -->
+            <!-- ======================= INICIO SECCIÓN LECTURA Y ESCRITURA ======================= -->
+            <!-- ====================================================================== -->
+            <section id="section-readingWriting" class="lesson-step" data-step-id="readingWriting" data-title="Lectura y Escritura" data-icon="📝" style="animation-delay: 0.5s;">
+                <h2><span class="icon">📝</span> Práctica de Lectura y Escritura</h2>
+                <p>¡Es hora de poner todo junto! Lee los textos, presta atención a las palabras nuevas y luego crea tus propias frases.</p>
+                
+                <h3 style="font-family: var(--font-titulos); color: var(--navy-tech);">Texto 1: Un Inventario Especial 📦</h3>
+                <div class="reading-text-block" id="inventoryStory">
+                    <!-- Texto de Joanne y Mary aquí -->
+                </div>
+                 <p style="font-weight: 500;">Basado en el texto, clasifica los objetos que encontraron. ¿Qué estaba cerca de ellos (This/These) y qué estaba más lejos (That/Those)?</p>
+                <textarea id="inventoryAnalysis" placeholder="Ej: This: old calendar, old desk lamp. / These: old notebooks..."></textarea>
+                <button onclick="checkInventoryAnalysis()"><span class="icon">🧐</span> Revisar Mi Análisis</button>
+                <div id="inventoryFeedback" class="feedback" style="display:none;"></div>
+                <hr style="margin: 25px 0;">
+
+                <h3 style="font-family: var(--font-titulos); color: var(--navy-tech);">Texto 2: ¡Celebridades con Múltiples Talentos! 🌟</h3>
+                 <div class="reading-text-block">
+                    <p>
+                        <strong>James Franco</strong> is <button onclick="speakPhrase('an actor', 'en-US')" style="all:unset; cursor:pointer; text-decoration:underline;">an actor</button> and <button onclick="speakPhrase('a teacher', 'en-US')" style="all:unset; cursor:pointer; text-decoration:underline;">a teacher</button>. 
+                        <strong>Cristiano Ronaldo</strong> is <button onclick="speakPhrase('an athlete', 'en-US')" style="all:unset; cursor:pointer; text-decoration:underline;">an athlete</button> and <button onclick="speakPhrase('a businessman', 'en-US')" style="all:unset; cursor:pointer; text-decoration:underline;">a businessman</button>. 
+                        <strong>Gwyneth Paltrow</strong> is <button onclick="speakPhrase('an actress', 'en-US')" style="all:unset; cursor:pointer; text-decoration:underline;">an actress</button>, <button onclick="speakPhrase('a singer', 'en-US')" style="all:unset; cursor:pointer; text-decoration:underline;">a singer</button>, and <button onclick="speakPhrase('a food writer', 'en-US')" style="all:unset; cursor:pointer; text-decoration:underline;">a food writer</button>.
+                    </p>
+                </div>
+                <p style="font-weight: 500;">¡Tu turno! Escribe sobre alguien que conozcas que tenga más de un trabajo o talento. Usa comas (,) y la palabra "and" correctamente.</p>
+                <textarea id="multiTalentWriting" placeholder="Ej: My uncle, David, is a carpenter and a musician."></textarea>
+                <button onclick="checkMultiTalentWriting()"><span class="icon">✉️</span> Enviar Mi Texto</button>
+                <div id="multiTalentFeedback" class="feedback" style="display:none;"></div>
+                
+                <div class="living-english-tip">
+                    <span class="icon">🚀</span><strong>Living English:</strong> Al listar cosas, la regla de la coma es clave. Pones comas entre cada elemento, y la palabra "and" antes del último. Por ejemplo: <button onclick="speakPhrase('I need a pen, a notebook, and an eraser.', 'en-US')" style="all:unset; cursor:pointer; text-decoration:underline;">"I need a pen, a notebook, and an eraser."</button>. ¡Esto hace que tu escritura sea clara y profesional!
+                </div>
+                <button class="mark-completed-btn" id="completeReadingWritingBtn" onclick="markStepCompleted('readingWriting', this)"><span class="icon">✔️</span> Completé Lectura y Escritura</button>
+            </section>
+
+            <!-- ====================================================================== -->
+            <!-- ======================= INICIO SECCIÓN MINI TEST ======================= -->
+            <!-- ====================================================================== -->
+            <section id="section-step4Quiz" class="lesson-step" data-step-id="step4Quiz_auto" data-title="Mini Test General" data-icon="🎯" style="animation-delay: 0.6s;">
+                <h2><span class="icon">🎯</span> Desafío Final: Mini Test General</h2>
+                <p>Demuestra todo lo que has aprendido en esta lección. ¡Elige la opción correcta y demuestra tu sabiduría!</p>
+                <div id="quizContainer"></div>
+                <button onclick="submitQuiz()"><span class="icon">🏆</span> ¡Revisar Mis Genialidades!</button>
+                <div id="quizFeedback" class="feedback" style="display:none;"></div>
+                <div class="living-english-tip">
+                    <span class="icon">🚀</span><strong>Living English:</strong> Don't be afraid of tests! No tengas miedo de los tests. Cada error es una oportunidad para aprender algo nuevo. The goal is progress, not perfection. ¡El objetivo es progresar, no la perfección!
+                </div>
+            </section>
+
+            <!-- ====================================================================== -->
+            <!-- ======================= INICIO SECCIÓN AI SPARKLY ======================= -->
+            <!-- ====================================================================== -->
+            <section id="section-aiChat" class="lesson-step ai-interaction" data-step-id="aiChat" data-title="Charla con Sparky" data-icon="🤖" style="animation-delay: 0.7s;">
+                <h2><span class="icon">🤖</span> Charla con el Profe Sparky</h2>
+                <p>¡Es hora de practicar de verdad! Usa tu voz para hablar con Sparky. ¡Pregúntale sobre profesiones, señálale objetos imaginarios o simplemente charla con él!</p>
+                <textarea id="aiUserInput" placeholder="Tu voz aparecerá aquí... o puedes escribir. Prueba a decirle: 'Hi Sparky. This is my desk. I want to be a doctor.'"></textarea>
+                 <div class="living-english-tip">
+                    <span class="icon">🚀</span><strong>Living English:</strong> ¡Sé creativo! Con Sparky, puedes practicar sin pena. Dile <button onclick="speakPhrase('Look Sparky! Those are beautiful birds outside my window!', 'en-US')" style="all:unset; cursor:pointer; text-decoration:underline;">"Look Sparky! Those are beautiful birds outside my window!"</button> o pregúntale <button onclick="speakPhrase('Do you want to be a veterinarian?', 'en-US')" style="all:unset; cursor:pointer; text-decoration:underline;">"Do you want to be a veterinarian?"</button>. ¡La práctica hace al maestro!
+                </div>
+                <div class="ai-buttons-container">
+                    <button id="sparky-voice-btn" onclick="startSparkyVoiceInteraction()"><span class="icon">🎤</span> Hablar con Sparky</button>
+                    <button onclick="askGemini()" class="send-text-btn"><span class="icon" style="font-size: 1.1em;">✉️</span> Enviar Texto</button>
+                </div>
+                <div id="aiResponse">Sparky está listo para charlar...</div>
+                 <button class="mark-completed-btn" id="completeAIChatBtn" onclick="markStepCompleted('aiChat', this)"><span class="icon">✔️</span> Completé Charla IA</button>
+            </section>
+            
+            <!-- ====================================================================== -->
+            <!-- ======================= INICIO SECCIÓN TIPS & TRICKS ======================= -->
+            <!-- ====================================================================== -->
+            <section id="section-summaryTips" class="lesson-step" data-title="Tips & Tricks" data-icon="🌟" style="animation-delay: 0.8s;">
+                <h2><span class="icon">🌟</span> Resumen y Súper Consejos</h2>
+                <p>¡Felicidades por llegar al final de la lección! Has aprendido herramientas increíblemente poderosas. Aquí tienes un resumen y algunos trucos para que nunca se te olviden.</p>
+                <ul>
+                    <li><strong>Demonstrativos:</strong> Usa <strong>This/These</strong> para lo que puedes tocar (cerca) y <strong>That/Those</strong> para lo que tienes que señalar (lejos).</li>
+                    <li><strong>Artículos:</strong> <strong>A/An</strong> para "un/una" (algo general) y <strong>The</strong> para "el/la" (algo específico que ya conoces). ¡Recuerda, es el SONIDO lo que importa para "a/an"!</li>
+                    <li><strong>Números:</strong> Practica los números y ordinales en voz alta. Intenta decir la fecha de hoy o tu edad todos los días en inglés.</li>
+                    <li><strong>Ocupaciones:</strong> Siempre usa <strong>a/an</strong> cuando dices la profesión de alguien. "She is <strong>a</strong> teacher", "He is <strong>an</strong> electrician".</li>
+                </ul>
+                <div class="living-english-tip">
+                    <span class="icon">🚀</span><strong>¡Súper Tip - Etiqueta tu mundo!</strong> Coge notas adhesivas (post-its) y pégalas en objetos de tu casa. En una nota para tu laptop, escribe: <button onclick="speakPhrase('This is my laptop.', 'en-US')" style="all:unset; cursor:pointer; text-decoration:underline;">"This is my laptop."</button>. En la ventana, pega una que diga <button onclick="speakPhrase('That is the street.', 'en-US')" style="all:unset; cursor:pointer; text-decoration:underline;">"That is the street."</button>. ¡Verlo todos los días lo grabará en tu cerebro!
+                </div>
+                 <div class="living-english-tip">
+                    <span class="icon">🎶</span><strong>Living English - Conviértete en Narrador:</strong> Mientras caminas o haces tus cosas, narra lo que ves en tu mente (o en voz baja) usando lo que aprendiste. "That is a bus driver. He is driving a big bus. These are my shoes. I need one hundred bolivares." ¡Es un juego divertido y súper efectivo!
+                </div>
+                 <p style="text-align:center; font-weight:600; margin-top:20px;">You are building a great foundation. Keep up the amazing work!</p>
+            </section>
+            
+            <div style="text-align: center; margin-top: 40px;">
+                <button id="finishLessonBtn" onclick="showCompletionModal()" style="padding: 15px 35px; font-size: 1.2em; background-color: var(--navy-tech); color: var(--blanco-nitido);"><span class="icon">🏁</span> Finalizar Misión 4</button>
+            </div>
+        </main>
+    </div>
+    
+    <div id="completionOverlay">
+        <div id="completionModal">
+            <div class="icon-modal">🎉</div>
+            <h2>¡Misión 4 Completada!</h2>
+            <p>¡Felicidades! Has dominado cómo describir tu mundo. Estás 100% listo para tu próxima clase en vivo.</p>
+            <button onclick="hideCompletionModal()">¡Genial!</button>
+        </div>
+    </div>
+
+
+    <script>
+        const GEMINI_API_KEY = "AIzaSyBHu1xRa0X4WXZNprZSnUpsSCc9d5Jbzqs"; 
+        const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
+
+        let progress = 0;
+        const trackableStepIds = [
+            'grammarDemonstratives', 
+            'vocabNumbers', 
+            'grammarArticles',
+            'vocabOccupations', 
+            'readingWriting', 
+            'step4Quiz_auto',     
+            'aiChat'
+        ];
+        let totalInteractiveSteps = trackableStepIds.length;
+        let completedSteps = new Set();
+
+        // --- GLOBAL VARIABLES (sin cambios) ---
+        let progressBarSidebarEl, progressTextSidebarEl, completionOverlayEl, 
+            contentAreaEl, sidebarMenuEl, appHeaderEl, lessonSidebarGlobalEl, overlayEl;
+        let lessonSections = []; 
+        let headerActualHeight = 70; 
+        let voices = []; 
+        let preferredVoices = {};
+        const synth = window.speechSynthesis;
+        let recognition;
+        let activeUtterance = null;
+        let audioCtx;
+        let isMobileMenuOpen = false;
+        let intersectionObserver;
+        let isSpeaking = false; 
+        let appInitialized = false;
+        let initialWelcomePending = true;
+
+        // --- VOICE & SPEECH FUNCTIONS (sin cambios, usando la versión mejorada) ---
+        function initializeSpeechAPI() {
+            if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                recognition.continuous = false;
+                recognition.lang = 'en-US';
+                recognition.interimResults = false;
+                recognition.maxAlternatives = 1;
+            } else {
+                console.warn("Speech Recognition API no es compatible.");
+                if (document.readyState === "complete" || document.readyState === "interactive") {
+                    disableRecordButtons();
+                } else {
+                    document.addEventListener('DOMContentLoaded', disableRecordButtons);
+                }
+            }
+            
+            function disableRecordButtons() {
+                document.querySelectorAll('.record-btn, #sparky-voice-btn').forEach(btn => {
+                    btn.disabled = true;
+                    btn.innerHTML = '<span class="icon">🚫</span> Grab. No Disp.';
+                });
+            }
+
+            getAndSetVoices();
+            if (speechSynthesis.onvoiceschanged !== undefined) {
+                speechSynthesis.onvoiceschanged = getAndSetVoices;
+            }
+        }
+        
+        function getAndSetVoices() {
+            voices = synth.getVoices();
+            if (voices.length > 0) {
+                preferredVoices['en-US'] = 
+                    voices.find(v => v.lang === 'en-US' && v.name.includes('Google') && v.name.toLowerCase().includes('female')) ||
+                    voices.find(v => v.lang === 'en-US' && v.name.toLowerCase().includes('zira')) ||
+                    voices.find(v => v.lang === 'en-US' && v.name.toLowerCase().includes('samantha')) ||
+                    voices.find(v => v.lang === 'en-US' && v.name.includes('Google')) ||
+                    voices.find(v => v.lang === 'en-US' && v.localService) ||
+                    voices.find(v => v.lang === 'en-US') ||
+                    voices.find(v => v.lang.startsWith('en-'));
+
+                preferredVoices['es-VE'] = 
+                    voices.find(v => v.lang === 'es-VE' && v.localService) ||
+                    voices.find(v => v.lang.startsWith('es-'));
+                
+                if (typeof synth.onvoiceschanged === "function" && synth.onvoiceschanged === getAndSetVoices) {
+                    synth.onvoiceschanged = null; 
+                }
+                if (appInitialized && initialWelcomePending) {
+                    initialWelcomePending = false;
+                    playWelcomeMessage();
+                }
+            }
+        }
+        // --- Otras funciones de voz y UI (playSound, updateProgressBar, etc) se mantienen iguales.
+        function playSound(type) { try { if (!audioCtx && (window.AudioContext || window.webkitAudioContext)) { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } if (!audioCtx) return; const oscillator = audioCtx.createOscillator(); const gainNode = audioCtx.createGain(); oscillator.connect(gainNode); gainNode.connect(audioCtx.destination); gainNode.gain.setValueAtTime(0, audioCtx.currentTime); gainNode.gain.linearRampToValueAtTime(0.06, audioCtx.currentTime + 0.01); let duration = 0.15; if (type === 'correct') { oscillator.type = 'sine'; oscillator.frequency.setValueAtTime(783.99, audioCtx.currentTime); oscillator.frequency.linearRampToValueAtTime(1046.50, audioCtx.currentTime + 0.1); } else if (type === 'incorrect') { oscillator.type = 'square'; oscillator.frequency.setValueAtTime(164.81, audioCtx.currentTime); oscillator.frequency.linearRampToValueAtTime(110, audioCtx.currentTime + 0.2); duration = 0.25; } else if (type === 'tada') { const now = audioCtx.currentTime; gainNode.gain.setValueAtTime(0.1, now); oscillator.type = 'triangle'; oscillator.frequency.setValueAtTime(523.25, now); oscillator.frequency.setValueAtTime(659.25, now + 0.08); oscillator.frequency.setValueAtTime(783.99, now + 0.16); oscillator.frequency.setValueAtTime(1046.50, now + 0.24); duration = 0.4; } gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration); oscillator.start(audioCtx.currentTime); oscillator.stop(audioCtx.currentTime + duration); } catch (e) { console.warn("No se pudo reproducir el sonido de feedback:", e); } }
+        function updateProgressBar() { let effectiveCompletedCount = 0; completedSteps.forEach(stepId => { if (trackableStepIds.includes(stepId)) { effectiveCompletedCount++; } }); progress = (totalInteractiveSteps > 0) ? (effectiveCompletedCount / totalInteractiveSteps) * 100 : 0; if(progressBarSidebarEl && progressTextSidebarEl) { progressBarSidebarEl.style.width = progress + '%'; progressTextSidebarEl.textContent = Math.round(progress) + '%'; } }
+        function markStepCompleted(stepTrackId, buttonElement) { if (!completedSteps.has(stepTrackId)) { completedSteps.add(stepTrackId); if(buttonElement) { buttonElement.classList.add('completed'); const iconSpan = buttonElement.querySelector('.icon'); buttonElement.innerHTML = (iconSpan ? iconSpan.outerHTML : '') + ' ¡Logrado! ✨'; buttonElement.disabled = true; } const sectionIdForMenu = `section-${stepTrackId.replace('_auto','')}`; const menuItemLink = sidebarMenuEl.querySelector(`a[href="#${sectionIdForMenu}"]`); if (menuItemLink && !menuItemLink.querySelector('.completed-check')) { const checkSpan = document.createElement('span'); checkSpan.classList.add('completed-check'); checkSpan.textContent = '✔️'; menuItemLink.appendChild(checkSpan); menuItemLink.classList.add('step-completed');} updateProgressBar(); } }
+        function getHeaderActualHeight() { return appHeaderEl ? appHeaderEl.offsetHeight : 70; }
+        function updateLayoutAndScroll() { headerActualHeight = getHeaderActualHeight(); document.body.style.paddingTop = `${headerActualHeight}px`; if (lessonSidebarGlobalEl && window.innerWidth > 850) { lessonSidebarGlobalEl.style.top = `${headerActualHeight}px`; lessonSidebarGlobalEl.style.height = `calc(100vh - ${headerActualHeight}px)`; } else if (lessonSidebarGlobalEl) { lessonSidebarGlobalEl.style.top = `0px`; lessonSidebarGlobalEl.style.height = `100vh`; } if(intersectionObserver && appInitialized) { setupIntersectionObserver(); } }
+        function populateSidebar() { if (!sidebarMenuEl || !contentAreaEl) return; sidebarMenuEl.innerHTML = ''; lessonSections = Array.from(contentAreaEl.querySelectorAll('section.lesson-step[id^="section-"][data-title]')); lessonSections.forEach((section) => { const title = section.dataset.title; const icon = section.dataset.icon || '🔹'; const sectionHtmlId = section.id; const stepTrackId = section.dataset.stepId; const listItem = document.createElement('li'); const link = document.createElement('a'); link.href = `#${sectionHtmlId}`; const textSpan = document.createElement('span'); textSpan.classList.add('menu-item-text'); textSpan.innerHTML = `<span class="menu-icon">${icon}</span> ${title}`; link.appendChild(textSpan); if (stepTrackId && trackableStepIds.includes(stepTrackId) && completedSteps.has(stepTrackId)) { const checkSpan = document.createElement('span'); checkSpan.classList.add('completed-check'); checkSpan.textContent = '✔️'; link.appendChild(checkSpan); link.classList.add('step-completed'); } link.addEventListener('click', (e) => { e.preventDefault(); scrollToSection(sectionHtmlId); if (window.innerWidth <= 850 && lessonSidebarGlobalEl && lessonSidebarGlobalEl.classList.contains('active')) { toggleMobileMenu(); } }); listItem.appendChild(link); sidebarMenuEl.appendChild(listItem); }); }
+        function setupIntersectionObserver() { if (intersectionObserver) intersectionObserver.disconnect(); headerActualHeight = getHeaderActualHeight(); const marginTop = headerActualHeight + 10; const marginBottom = Math.max(0, window.innerHeight - marginTop - (window.innerHeight * 0.3)); const options = { root: null, rootMargin: `-${marginTop}px 0px -${marginBottom}px 0px`, threshold: 0.01 }; intersectionObserver = new IntersectionObserver(entries => { let firstIntersectingEntry = null; entries.forEach(entry => { if (entry.isIntersecting) { if (!firstIntersectingEntry || entry.target.offsetTop < firstIntersectingEntry.target.offsetTop) { firstIntersectingEntry = entry; } } }); if (firstIntersectingEntry) { updateActiveMenuItemDOM(firstIntersectingEntry.target.id); } else { let currentScrollY = window.pageYOffset; let closestSectionId = null; let minDistance = Infinity; lessonSections.forEach(section => { const sectionTop = section.offsetTop - headerActualHeight -10; const distance = Math.abs(currentScrollY - sectionTop); if (distance < minDistance) { minDistance = distance; closestSectionId = section.id; } }); if (closestSectionId) { updateActiveMenuItemDOM(closestSectionId); } } }, options); lessonSections.forEach(section => { if(section) intersectionObserver.observe(section); }); }
+        function updateActiveMenuItemDOM(activeSectionId) { if (!sidebarMenuEl) return; sidebarMenuEl.querySelectorAll('a').forEach(a => a.classList.remove('active')); const linkToActivate = sidebarMenuEl.querySelector(`a[href="#${activeSectionId}"]`); if (linkToActivate) { linkToActivate.classList.add('active'); } }
+        function scrollToSection(sectionHtmlId) { const section = document.getElementById(sectionHtmlId); if (section) { const yOffset = -(headerActualHeight + 10); const elementPosition = section.getBoundingClientRect().top; const offsetPosition = elementPosition + window.pageYOffset + yOffset; window.scrollTo({ top: offsetPosition, behavior: 'smooth' }); updateActiveMenuItemDOM(sectionHtmlId); } }
+        function toggleMobileMenu() { isMobileMenuOpen = !isMobileMenuOpen; if (lessonSidebarGlobalEl) { lessonSidebarGlobalEl.classList.toggle('active', isMobileMenuOpen); } if (overlayEl) { overlayEl.style.display = isMobileMenuOpen ? 'block' : 'none'; } }
+        function speakPhrase(text, lang = 'en-US', callback) { if (!synth) { if (callback) callback(); return; } if (synth.speaking) { synth.cancel(); } setTimeout(() => { if (text !== '') { activeUtterance = new SpeechSynthesisUtterance(text); if (voices.length === 0) voices = synth.getVoices(); let voiceToUse = preferredVoices[lang] || preferredVoices[lang.split('-')[0]] || null; if (!voiceToUse && voices.length > 0) { voiceToUse = voices.find(v => v.lang.startsWith(lang.split('-')[0])) || voices.find(v => v.lang.startsWith('en')); } if (voiceToUse) { activeUtterance.voice = voiceToUse; } activeUtterance.pitch = 1; activeUtterance.rate = (lang.startsWith('es-')) ? 1.05 : 0.95; let highlightElement = document.querySelector('.phrase-text span.highlight.active'); activeUtterance.onstart = () => { isSpeaking = true; }; activeUtterance.onend = () => { isSpeaking = false; activeUtterance = null; if (highlightElement) highlightElement.classList.remove('active'); if (typeof callback === 'function') callback(); }; activeUtterance.onerror = (event) => { isSpeaking = false; console.error('SpeechSynthesisUtterance.onerror:', event.error); activeUtterance = null; if (highlightElement) highlightElement.classList.remove('active'); if (typeof callback === 'function') callback(); }; try { synth.speak(activeUtterance); } catch (e) { console.error("Error al synth.speak:", e); isSpeaking = false; if (typeof callback === 'function') callback(); } } else { if (typeof callback === 'function') callback(); } }, 75); }
+        function showCompletionModal() { if (completedSteps.size < totalInteractiveSteps) { const message = '¡Ánimo! Aún te faltan algunos pasos para completar la misión. ¡Tú puedes!'; alert(message); for (const stepId of trackableStepIds) { if (!completedSteps.has(stepId)) { const sectionId = `section-${stepId.replace('_auto','')}`; scrollToSection(sectionId); break; } } } else { completionOverlayEl.style.display = 'flex'; playSound('tada'); speakPhrase("Mission Completed! Congratulations!", 'en-US'); } }
+        function hideCompletionModal() { completionOverlayEl.style.display = 'none'; }
+
+
+        // --- CONTENIDO Y LÓGICA DE LA LECCIÓN 4 ---
+
+        // --- DATOS DE LA LECCIÓN ---
+        const demonstrativesQuestions = [
+            { sentence_start: '______ is a beautiful dress.', context: '(near)', answer: 'this' },
+            { sentence_start: '______ are five big birds.', context: '(far)', answer: 'those' },
+            { sentence_start: '______ are my favorite books.', context: '(near)', answer: 'these' },
+            { sentence_start: '______ is an interesting magazine.', context: '(near)', answer: 'this' },
+            { sentence_start: '______ is my mom.', context: '(far)', answer: 'that' }
+        ];
+
+        const numbersVocabulary = [
+            { num: '30', word: 'thirty', pronunciation: 'zér-ti' },
+            { num: '40', word: 'forty', pronunciation: 'fór-ti' },
+            { num: '50', word: 'fifty', pronunciation: 'fíf-ti' },
+            { num: '60', word: 'sixty', pronunciation: 'síx-ti' },
+            { num: '70', word: 'seventy', pronunciation: 'sé-ven-ti' },
+            { num: '80', word: 'eighty', pronunciation: 'éi-ti' },
+            { num: '90', word: 'ninety', pronunciation: 'náin-ti' },
+            { num: '100', word: 'one hundred', pronunciation: 'uán ján-dred' },
+            { num: '1000', word: 'one thousand', pronunciation: 'uán záu-sand' }
+        ];
+
+        const ordinalNumbersVocabulary = [
+            { num: '1st', word: 'first', pronunciation: 'ferst' },
+            { num: '2nd', word: 'second', pronunciation: 'sé-cond' },
+            { num: '3rd', word: 'third', pronunciation: 'zerd' },
+            { num: '4th', word: 'fourth', pronunciation: 'forz' },
+            { num: '11th', word: 'eleventh', pronunciation: 'e-lé-venz' },
+            { num: '21st', word: 'twenty-first', pronunciation: 'tuén-ti ferst' }
+        ];
+
+        const articlesQuestions = [
+            { sentence_start: 'I want ______ pizza.', answer: 'a' },
+            { sentence_start: 'She needs ______ umbrella.', answer: 'an' },
+            { sentence_start: 'We are waiting for ______ route 5 bus.', answer: 'the' },
+            { sentence_start: 'Please, give me ______ English book.', answer: 'the' },
+            { sentence_start: '______ police officer is outside.', answer: 'the' }
+        ];
+
+        const occupationsVocabulary = [
+            { occupation: 'electrician', emoji: '💡', translation: 'electricista', pronunciation: 'e-lec-trí-shan' },
+            { occupation: 'hairdresser', emoji: '💇', translation: 'peluquero/a', pronunciation: 'jer-dré-ser' },
+            { occupation: 'janitor', emoji: '🧹', translation: 'conserje', pronunciation: 'yá-ni-tor' },
+            { occupation: 'police officer', emoji: '👮', translation: 'policía', pronunciation: 'po-lís ó-fi-ser' },
+            { occupation: 'veterinarian', emoji: '🐾', translation: 'veterinario/a', pronunciation: 've-te-ri-né-rian' },
+            { occupation: 'accountant', emoji: '💼', translation: 'contador/a', pronunciation: 'a-cáun-tant' },
+            { occupation: 'actor / actress', emoji: '🎭', translation: 'actor / actriz', pronunciation: 'ác-tor / ác-tres' },
+            { occupation: 'baker', emoji: '🥖', translation: 'panadero/a', pronunciation: 'béi-ker' },
+            { occupation: 'bus driver', emoji: '🚌', translation: 'conductor/a de autobús', pronunciation: 'bós drái-ver' },
+            { occupation: 'carpenter', emoji: '🔨', translation: 'carpintero/a', pronunciation: 'cár-pen-ter' },
+            { occupation: 'cashier', emoji: '🛒', translation: 'cajero/a', pronunciation: 'ca-shí-er' },
+            { occupation: 'chef', emoji: '👨‍🍳', translation: 'chef', pronunciation: 'shef' }
+        ];
+        
+        const occupationsQuestions = [
+            { question: 'Who protects people?', answer: 'a police officer' },
+            { question: 'Who bakes cakes?', answer: 'a baker' },
+            { question: 'Who keeps places clean?', answer: 'a janitor' },
+            { question: 'Who stars in movies?', answer: 'an actor' }
+        ];
+
+        const inventoryStoryText = `<strong>Joanne:</strong> Hi, Mary. What are you doing?<br>
+            <strong>Mary:</strong> Hi, Joanne. I’m making an inventory of school supplies we have in the office. Can you help me?<br>
+            <strong>Joanne:</strong> Yes, of course!<br>
+            <strong>Mary:</strong> All right. Can you open <span class="highlight-demonstrative" onclick="speakPhrase('that', 'en-US')">that</span> brown box and see what is inside?<br>
+            <strong>Joanne:</strong> Oh dear! <span class="highlight-demonstrative" onclick="speakPhrase('This', 'en-US')">This</span> old box is really heavy! <span class="highlight-demonstrative" onclick="speakPhrase('These', 'en-US')">These</span> are old notebooks and books.<br>
+            <strong>Mary:</strong> Look what I found! <span class="highlight-demonstrative" onclick="speakPhrase('This', 'en-US')">This</span> is a very old calendar; it is from 1924! And <span class="highlight-demonstrative" onclick="speakPhrase('that', 'en-US')">that</span> old desk lamp is wonderful. I wonder if it still works.<br>
+            <strong>Joanne:</strong> What are <span class="highlight-demonstrative" onclick="speakPhrase('those', 'en-US')">those</span> old paper blocks?<br>
+            <strong>Mary:</strong> I think <span class="highlight-demonstrative" onclick="speakPhrase('those', 'en-US')">those</span> are Miss Livery’s notes. She used to work in this office a long time ago.`;
+
+        const quizData = [
+             { question: "If a book is right next to you, you say:", options: ["That is a book.", "This is a book.", "Those are a book.", "These is a book."], answer: "This is a book.", explanation: "'This' se usa para una sola cosa que está cerca (near). ¡Perfecto!" },
+            { question: "How do you write '882' in letters?", options: ["Eight eighty-two", "Eight hundred two eight", "Eight hundred eighty-two", "Eighty hundred two"], answer: "Eight hundred eighty-two", explanation: "Se dice el número de las centenas (Eight hundred), y luego el número de dos cifras (eighty-two)." },
+            { question: "Which article is correct for '___ elephant'?", options: ["a", "the", "an", "at"], answer: "an", explanation: "'Elephant' empieza con sonido de vocal, por lo que usamos 'an'. ¡Excelente!" },
+            { question: "A person who works in an animal hospital is...", options: ["a janitor", "a veterinarian", "an actor", "a baker"], answer: "a veterinarian", explanation: "A veterinarian (or 'vet') helps animals. ¡Buen trabajo!" },
+            { question: "If you see two cars far away, you say:", options: ["That are cars.", "This is cars.", "These are cars.", "Those are cars."], answer: "Those are cars.", explanation: "'Those' se usa para varias cosas (plural) que están lejos (far)." }
+        ];
+
+
+        // --- FUNCIONES PARA DIBUJAR EL CONTENIDO ---
+        function displayDemonstrativesPractice() {
+            const container = document.getElementById('demonstratives_practice');
+            if (!container) return;
+            container.innerHTML = '';
+            demonstrativesQuestions.forEach((q, index) => {
+                const div = document.createElement('div');
+                div.classList.add('phrase-block');
+                div.innerHTML = `
+                    <span>${index + 1}. <input type="text" id="dem_q${index}" class="fill-in-blank-input" placeholder="____" style="width: 70px;"> ${q.sentence_start.substring(6)} <em>${q.context}</em></span>
+                `;
+                container.appendChild(div);
+            });
+        }
+        
+        function displayNumbersVocabulary() {
+            const container = document.getElementById('numbersVocabularyContainer');
+            if (!container) return;
+            container.innerHTML = '';
+            numbersVocabulary.forEach(item => {
+                const div = document.createElement('div');
+                div.classList.add('vocab-list-item');
+                div.innerHTML = `
+                    <div class="vocab-word-details">
+                        <strong>${item.num} &rarr; ${item.word.charAt(0).toUpperCase() + item.word.slice(1)}</strong>
+                        <span class="pronunciation-guide">${item.pronunciation}</span>
+                    </div>
+                    <button onclick="speakPhrase('${item.word}', 'en-US')" title="Escuchar '${item.word}'"><span class="icon">🔊</span></button>
+                `;
+                container.appendChild(div);
+            });
+        }
+        
+        function displayOrdinalNumbers() {
+            const container = document.getElementById('ordinalNumbersVocabularyContainer');
+            if (!container) return;
+            container.innerHTML = '';
+            ordinalNumbersVocabulary.forEach(item => {
+                const div = document.createElement('div');
+                div.classList.add('vocab-list-item');
+                div.innerHTML = `
+                    <div class="vocab-word-details">
+                        <strong>${item.num} &rarr; ${item.word.charAt(0).toUpperCase() + item.word.slice(1)}</strong>
+                        <span class="pronunciation-guide">${item.pronunciation}</span>
+                    </div>
+                    <button onclick="speakPhrase('${item.word}', 'en-US')" title="Escuchar '${item.word}'"><span class="icon">🔊</span></button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function displayArticlesGrid() {
+            const grid = document.getElementById('articles-grid');
+            if (!grid) return;
+            grid.innerHTML = `
+                <div class="rule">
+                    <h3><span class="icon">🅰️</span> Usamos 'a'</h3>
+                    <p>Antes de una palabra que empieza con <strong>sonido</strong> de consonante.</p>
+                    <ul>
+                        <li onclick="speakPhrase('a ship', 'en-US')" style="cursor:pointer;">a ship, a taxi, a cake</li>
+                        <li onclick="speakPhrase('a university', 'en-US')" style="cursor:pointer;">a university (sonido /juː/)</li>
+                    </ul>
+                </div>
+                <div class="rule">
+                    <h3><span class="icon">🍎</span> Usamos 'an'</h3>
+                    <p>Antes de una palabra que empieza con <strong>sonido</strong> de vocal.</p>
+                    <ul>
+                        <li onclick="speakPhrase('an alligator', 'en-US')" style="cursor:pointer;">an alligator, an example</li>
+                        <li onclick="speakPhrase('an hour', 'en-US')" style="cursor:pointer;">an hour (sonido /aʊər/)</li>
+                    </ul>
+                </div>
+                <div class="rule">
+                    <h3><span class="icon">⭐</span> Usamos 'the'</h3>
+                    <p>Antes de un sustantivo <strong>específico</strong> que ya conocemos.</p>
+                    <ul>
+                        <li onclick="speakPhrase('the teacher', 'en-US')" style="cursor:pointer;">the teacher (ese profesor)</li>
+                        <li onclick="speakPhrase('the car', 'en-US')" style="cursor:pointer;">the car (ese carro)</li>
+                    </ul>
+                </div>
+            `;
+        }
+
+        function displayArticlesPractice() {
+            const container = document.getElementById('articles_practice');
+            if (!container) return;
+            container.innerHTML = '';
+            articlesQuestions.forEach((q, index) => {
+                const div = document.createElement('div');
+                div.classList.add('phrase-block');
+                div.innerHTML = `
+                    <span>${index + 1}. ${q.sentence_start.replace('______', `<input type="text" id="art_q${index}" class="fill-in-blank-input" placeholder="_" style="width: 40px;">`)}</span>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function displayOccupationsVocabulary() {
+            const container = document.getElementById('occupationsVocabularyContainer');
+            if (!container) return;
+            container.innerHTML = '';
+            occupationsVocabulary.forEach(item => {
+                const div = document.createElement('div');
+                div.classList.add('vocab-list-item');
+                div.innerHTML = `
+                    <div class="vocab-word-details">
+                        <strong>${item.emoji} ${item.occupation.charAt(0).toUpperCase() + item.occupation.slice(1)}</strong>
+                        <span class="translation">(${item.translation})</span>
+                        <span class="pronunciation-guide">${item.pronunciation}</span>
+                    </div>
+                    <button onclick="speakPhrase('${item.occupation}', 'en-US')" title="Escuchar '${item.occupation}'"><span class="icon">🔊</span></button>
+                `;
+                container.appendChild(div);
+            });
+        }
+        
+        function displayOccupationsPractice() {
+            const container = document.getElementById('occupations_practice');
+            if (!container) return;
+            container.innerHTML = '';
+            occupationsQuestions.forEach((q, index) => {
+                const div = document.createElement('div');
+                div.classList.add('phrase-block');
+                div.innerHTML = `
+                    <div style="flex-grow: 1;">
+                        <p style="margin:0; font-size: 1em; color: var(--texto-secundario);">${index + 1}. ${q.question}</p>
+                        <input type="text" id="occ_q${index}" class="fill-in-blank-input" placeholder="a/an + profession" style="width: 150px; margin-top:5px; margin-left:0;">
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function displayInventoryStory() {
+            const container = document.getElementById('inventoryStory');
+            if (container) container.innerHTML = `<p>${inventoryStoryText}</p>`;
+        }
+        
+        function displayQuiz() {
+            const quizContainer = document.getElementById('quizContainer');
+            if (!quizContainer) return;
+            quizContainer.innerHTML = '';
+            quizData.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.classList.add('quiz-question');
+                let optionsHTML = `<p class="question-text">${index + 1}. ${q.question}</p><div class="quiz-options">`;
+                q.options.forEach(option => {
+                    optionsHTML += `<label><input type="radio" name="question${index}" value="${option}"> ${option}</label>`;
+                });
+                optionsHTML += `</div><div class="explanation" id="explanation${index}" style="display:none;"></div>`;
+                questionDiv.innerHTML = optionsHTML;
+                quizContainer.appendChild(questionDiv);
+            });
+        }
+        
+        // --- FUNCIONES DE VERIFICACIÓN ---
+        function checkDemonstratives() {
+            const feedbackDiv = document.getElementById('demonstratives_feedback');
+            if (!feedbackDiv) return;
+            feedbackDiv.style.display = 'block';
+            let allCorrect = true;
+            let firstErrorField = null;
+
+            demonstrativesQuestions.forEach((q, index) => {
+                const inputField = document.getElementById(`dem_q${index}`);
+                if (!inputField) return;
+                const userAnswer = inputField.value.trim().toLowerCase();
+                
+                if (userAnswer === q.answer) {
+                    inputField.style.borderColor = 'var(--verde-exito)';
+                } else {
+                    allCorrect = false;
+                    inputField.style.borderColor = 'var(--rojo-error)';
+                    if (!firstErrorField) firstErrorField = inputField;
+                }
+            });
+
+            if (allCorrect) {
+                feedbackDiv.innerHTML = `<div class="feedback success">¡Todas correctas! Eres un experto señalando cosas.</div>`;
+                playSound('correct');
+                speakPhrase("All correct! You are an expert at pointing things out.", 'en-US');
+            } else {
+                feedbackDiv.innerHTML = `<div class="feedback error">¡Casi! Revisa las respuestas en rojo. Recuerda: this/these para cerca, that/those para lejos.</div>`;
+                playSound('incorrect');
+                speakPhrase("Almost! Check the answers in red.", 'en-US');
+                if (firstErrorField) firstErrorField.focus();
+            }
+        }
+
+        function checkArticles() {
+            const feedbackDiv = document.getElementById('articles_feedback');
+            if (!feedbackDiv) return;
+            feedbackDiv.style.display = 'block';
+            let allCorrect = true;
+            let firstErrorField = null;
+
+            articlesQuestions.forEach((q, index) => {
+                const inputField = document.getElementById(`art_q${index}`);
+                if (!inputField) return;
+                const userAnswer = inputField.value.trim().toLowerCase();
+                
+                if (userAnswer === q.answer) {
+                    inputField.style.borderColor = 'var(--verde-exito)';
+                } else {
+                    allCorrect = false;
+                    inputField.style.borderColor = 'var(--rojo-error)';
+                    if (!firstErrorField) firstErrorField = inputField;
+                }
+            });
+
+            if (allCorrect) {
+                feedbackDiv.innerHTML = `<div class="feedback success">¡Perfecto! Dominas los artículos a, an y the.</div>`;
+                playSound('correct');
+                speakPhrase("Perfect! You master the articles a, an, and the.", 'en-US');
+            } else {
+                feedbackDiv.innerHTML = `<div class="feedback error">¡Revisa las marcadas en rojo! Recuerda la regla del sonido para 'a' y 'an'.</div>`;
+                playSound('incorrect');
+                speakPhrase("Check the ones marked in red! Remember the sound rule for a and an.", 'en-US');
+                if (firstErrorField) firstErrorField.focus();
+            }
+        }
+        
+        function checkOccupations() {
+            const feedbackDiv = document.getElementById('occupations_feedback');
+            if (!feedbackDiv) return;
+            feedbackDiv.style.display = 'block';
+            let allCorrect = true;
+            let firstErrorField = null;
+
+            occupationsQuestions.forEach((q, index) => {
+                const inputField = document.getElementById(`occ_q${index}`);
+                if (!inputField) return;
+                const userAnswer = inputField.value.trim().toLowerCase();
+                
+                if (userAnswer === q.answer) {
+                    inputField.style.borderColor = 'var(--verde-exito)';
+                } else {
+                    allCorrect = false;
+                    inputField.style.borderColor = 'var(--rojo-error)';
+                    if (!firstErrorField) firstErrorField = inputField;
+                }
+            });
+
+            if (allCorrect) {
+                feedbackDiv.innerHTML = `<div class="feedback success">¡Genial! Conoces bien las profesiones.</div>`;
+                playSound('correct');
+                speakPhrase("Great! You know the professions well.", 'en-US');
+            } else {
+                feedbackDiv.innerHTML = `<div class="feedback error">Algunas respuestas no son correctas. ¡No te olvides del artículo 'a' o 'an'!</div>`;
+                playSound('incorrect');
+                speakPhrase("Some answers are not correct. Don't forget the article a or an!", 'en-US');
+                if (firstErrorField) firstErrorField.focus();
+            }
+        }
+        
+        function checkInventoryAnalysis() {
+            const feedbackDiv = document.getElementById('inventoryFeedback');
+            const userInput = document.getElementById('inventoryAnalysis').value.toLowerCase();
+            if (!feedbackDiv || userInput.trim() === '') return;
+            feedbackDiv.style.display = 'block';
+
+            let score = 0;
+            if(userInput.includes('this') && (userInput.includes('box') || userInput.includes('calendar'))) score++;
+            if(userInput.includes('that') && (userInput.includes('box') || userInput.includes('lamp'))) score++;
+            if(userInput.includes('these') && (userInput.includes('notebooks') || userInput.includes('books'))) score++;
+            if(userInput.includes('those') && (userInput.includes('blocks') || userInput.includes('notes'))) score++;
+
+            if(score >= 3) {
+                 feedbackDiv.innerHTML = `<div class="feedback success">¡Excelente análisis! Comprendiste perfectamente el uso de los demostrativos en la conversación.</div>`;
+                 playSound('correct');
+                 speakPhrase("Excellent analysis! You perfectly understood the use of demonstratives.", 'en-US');
+            } else {
+                 feedbackDiv.innerHTML = `<div class="feedback info">¡Buen intento! Relee el texto y fíjate bien en qué objetos estaban cerca (this/these) y cuáles lejos (that/those) para los personajes.</div>`;
+                 playSound('incorrect');
+                 speakPhrase("Good try! Reread the text and pay attention to the demonstratives.", 'en-US');
+            }
+        }
+
+        function checkMultiTalentWriting() {
+            const feedbackDiv = document.getElementById('multiTalentFeedback');
+            const userInput = document.getElementById('multiTalentWriting').value;
+            if (!feedbackDiv || userInput.trim() === '') return;
+            feedbackDiv.style.display = 'block';
+
+            let message = '';
+            if (userInput.includes(' is a ') && userInput.includes(' and a ')) {
+                message = `<div class="feedback success">¡Fantástico! Usaste la estructura perfectly. '...is a [job] and a [job].' ¡Muy bien!</div>`;
+                playSound('correct');
+                speakPhrase("Fantastic! You used the structure perfectly.", 'en-US');
+            } else if (userInput.includes(' and ')) {
+                 message = `<div class="feedback info">¡Vas por buen camino! Solo recuerda incluir el artículo 'a' o 'an' antes de cada profesión. Ej: '...is <strong>a</strong> carpenter and <strong>a</strong> musician.'</div>`;
+                 playSound('incorrect');
+                 speakPhrase("You're on the right track! Just remember to include the article a or an before each profession.", 'en-US');
+            } else {
+                 message = `<div class="feedback error">¡Inténtalo de nuevo! Asegúrate de usar 'and' para unir las profesiones y 'a' o 'an' antes de cada una. ¡Tú puedes!</div>`;
+                 playSound('incorrect');
+                 speakPhrase("Try again! Make sure to use 'and' to connect the professions.", 'en-US');
+            }
+            feedbackDiv.innerHTML = message;
+        }
+
+        function submitQuiz() {
+            const feedbackDiv = document.getElementById('quizFeedback');
+            if (!feedbackDiv) return;
+            feedbackDiv.style.display = 'block';
+            let score = 0;
+            let allAnswered = true;
+            let firstErrorRadioName = null;
+
+            quizData.forEach((q, index) => {
+                const selectedOption = document.querySelector(`input[name="question${index}"]:checked`);
+                const explanationDiv = document.getElementById(`explanation${index}`);
+                const optionLabels = document.querySelectorAll(`input[name="question${index}"]`); 
+
+                optionLabels.forEach(labelInput => { labelInput.parentElement.classList.remove('correct', 'incorrect'); });
+
+                if (selectedOption) {
+                    if (explanationDiv) { explanationDiv.innerHTML = `<span class="icon">💡</span> ${q.explanation}`; explanationDiv.style.display = 'block'; }
+                    if (selectedOption.value === q.answer) { score++; selectedOption.parentElement.classList.add('correct');
+                    } else { selectedOption.parentElement.classList.add('incorrect'); optionLabels.forEach(labelInput => { if(labelInput.value === q.answer) { labelInput.parentElement.classList.add('correct'); } }); if(!firstErrorRadioName) firstErrorRadioName = `question${index}`; }
+                } else { allAnswered = false; if(!firstErrorRadioName) firstErrorRadioName = `question${index}`; }
+            });
+
+            if (!allAnswered) {
+                feedbackDiv.innerHTML = `<div class="feedback error">¡Oh, oh! Parece que olvidaste responder alguna pregunta. ¡Revísalas!</div>`;
+                playSound('incorrect');
+                 if (firstErrorRadioName) { const firstErrorElement = document.querySelector(`input[name="${firstErrorRadioName}"]`); if (firstErrorElement) { firstErrorElement.focus(); firstErrorElement.parentElement.scrollIntoView({behavior: "smooth", block: "center"}); } }
+                return;
+            }
+
+            let feedbackMessage = ''; let soundToPlayText = '';
+            const percentageScore = (score / quizData.length) * 100;
+            const stepIdForProgress = 'step4Quiz_auto';
+
+            if (percentageScore >= 70) { 
+                feedbackMessage = `<div class="feedback success">¡EXCELENTE TRABAJO! Has acertado ${score} de ${quizData.length}. ¡Estás aprendiendo súper rápido!</div>`;
+                soundToPlayText = `Excellent work! You got ${score} out of ${quizData.length} correct. You are learning super fast!`;
+                playSound('correct');
+                if (!completedSteps.has(stepIdForProgress)) markStepCompleted(stepIdForProgress, null);
+            } else {
+                feedbackMessage = `<div class="feedback error">Tienes ${score} de ${quizData.length}. ¡No te preocupes! Revisa las explicaciones y sigue practicando. ¡Tú puedes!</div>`;
+                soundToPlayText = `You got ${score} out of ${quizData.length}. Don't worry! Review the explanations and keep practicing. You can do it!`;
+                playSound('incorrect');
+                if (completedSteps.has(stepIdForProgress)) { completedSteps.delete(stepIdForProgress); updateProgressBar(); }
+            }
+            feedbackDiv.innerHTML = feedbackMessage;
+            speakPhrase(soundToPlayText, 'en-US');
+        }
+
+        // --- FUNCIONES AI SPARKLY ---
+        function startSparkyVoiceInteraction() {
+            const aiResponseDiv = document.getElementById('aiResponse');
+            const voiceButton = document.getElementById('sparky-voice-btn');
+            const textButton = document.querySelector('#section-aiChat .send-text-btn');
+            const userInputTextArea = document.getElementById('aiUserInput');
+
+            if (!recognition) {
+                aiResponseDiv.textContent = "Sparky dice: Lo siento, la grabación de voz no está disponible en tu navegador. ¡Pero puedes escribirme tu mensaje!";
+                return;
+            }
+            
+            aiResponseDiv.textContent = "Sparky está escuchando...";
+            // speakPhrase("Go ahead, I'm listening.", 'en-US'); // REMOVED as per user request for visual-only prompt
+            
+            voiceButton.classList.add('recording');
+            voiceButton.disabled = true; textButton.disabled = true;
+            voiceButton.innerHTML = '<span class="icon">🛑</span> Escuchando...';
+
+            recognition.onresult = function(event) {
+                const speechResult = event.results[0][0].transcript;
+                userInputTextArea.value = speechResult; 
+                aiResponseDiv.textContent = `Escuché: "${speechResult}". Ahora, Sparky está pensando...`;
+                askGemini(); 
+            }
+            recognition.onerror = function(event) {
+                let errorMessage = "Sparky dice: ¡Ups! ";
+                if (event.error == 'no-speech') errorMessage += 'No te escuché bien. ¿Podrías hablar más cerca del micrófono?';
+                else errorMessage += 'Hubo un error con el reconocimiento de voz. Inténtalo de nuevo.';
+                aiResponseDiv.textContent = errorMessage;
+                playSound('incorrect');
+                voiceButton.classList.remove('recording'); voiceButton.disabled = false; textButton.disabled = false;
+                voiceButton.innerHTML = '<span class="icon">🎤</span> Hablar con Sparky';
+            }
+            try { recognition.start(); } catch(e) { aiResponseDiv.textContent = "Sparky dice: Error al iniciar la grabación."; }
+        }
+
+        async function askGemini() {
+            const userInput = document.getElementById('aiUserInput').value;
+            const aiResponseDiv = document.getElementById('aiResponse');
+            const voiceButton = document.getElementById('sparky-voice-btn');
+            const textButton = document.querySelector('#section-aiChat .send-text-btn');
+
+            if (!userInput.trim()) return;
+            
+            voiceButton.disabled = true; textButton.disabled = true;
+            voiceButton.innerHTML = '<span class="icon">⏳</span> Pensando...';
+            aiResponseDiv.textContent = "Sparky está procesando tu mensaje...";
+            
+             const prompt = `Eres "Sparky", un asistente de IA super amigable, paciente y divertido para un estudiante de inglés de nivel A1. El estudiante está aprendiendo sobre pronombres demostrativos (this, that, these, those), artículos (a, an, the), números (30-1000 y ordinales), y ocupaciones (doctor, teacher, etc.).
+
+            El estudiante te dice: "${userInput}"
+
+            Tu respuesta DEBE ser:
+            1. En INGLÉS MUY SENCILLO Y CLARO (A1, frases cortas).
+            2. Extremadamente positivo y motivador. No uses emojis.
+            3. Si el estudiante usa un demostrativo correctamente (ej. "This is a pen", "Those are my books"): "Awesome! That's a great sentence with '${userInput.split(" ")[0]}'! What is that over there?" (Anímalo a usar otro).
+            4. Si el estudiante usa un artículo correctamente (ej. "I want to be a doctor", "I see an elephant"): "Perfect! You used '${userInput.includes(' an ') ? 'an' : 'a'}' correctly! What do you see in the sky? The moon or a star?".
+            5. Si pregunta por una profesión ("What is a veterinarian?"): "A veterinarian is a doctor for animals, like dogs and cats! It's a very important job. Do you like animals?".
+            6. Si usa un número o pregunta sobre él: "Great job with numbers! You said '${userInput.match(/\d+|[a-zA-Z]+-?[a-zA-Z]*/g).find(w => !isNaN(parseInt(w)) || ["hundred", "thousand"].some(n => w.includes(n)))}'. That's a big number! Can you tell me your favorite number?".
+            7. Si el estudiante dice qué quiere ser ("I want to be a baker"): "Wow, a baker! That's a wonderful job. Bakers make delicious bread and cakes! Do you like to cook?".
+            8. Si la frase es confusa o tiene errores claros (ej. "This are my book"): "Good try! That's so close! For one book near you, we say: 'This is my book'. For many books near you, we say 'These are my books'. Let's try again! What's that on your desk?".
+            9. Si el saludo es simple ("hi sparky"): "Hey there! Great to talk to you! Let's practice. You can tell me what job you like, or point to something in your room using 'this', 'that', 'these', or 'those'!".
+            10. Mantén las respuestas cortas y dulces (1-3 frases máximo).
+            11. **ABSOLUTAMENTE NADA DE ESPAÑOL.** Solo inglés.
+            12. Responde directamente. No empieces con "Sparky says:".
+            `;
+
+            try {
+                const response = await fetch(GEMINI_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }],
+                        generationConfig: { temperature: 0.7, maxOutputTokens: 180 }
+                    }),
+                });
+                if (!response.ok) throw new Error(`API Error: ${response.status}`);
+                const data = await response.json();
+                
+                if (data.candidates && data.candidates[0].content.parts[0].text) {
+                    let aiText = data.candidates[0].content.parts[0].text.trim();
+                    aiResponseDiv.textContent = "Sparky dice: " + aiText;
+                    speakPhrase(aiText, 'en-US'); 
+                } else {
+                    aiResponseDiv.textContent = "Sparky dice: Hmm, I'm a bit confused. Could you say that again in a different way?";
+                    speakPhrase("Hmm, I'm a bit confused. Could you say that again in a different way?", 'en-US');
+                }
+            } catch (error) {
+                console.error("Error al contactar Gemini API:", error);
+                aiResponseDiv.textContent = "Sparky dice: Oops! I'm having trouble connecting. Please check your internet and try again.";
+                speakPhrase("Oops! I'm having trouble connecting. Please check your internet and try again.", 'en-US');
+            } finally {
+                voiceButton.classList.remove('recording');
+                voiceButton.disabled = false; textButton.disabled = false;
+                voiceButton.innerHTML = '<span class="icon">🎤</span> Hablar con Sparky';
+            }
+        }
+        
+        // --- INICIALIZACIÓN DE LA PÁGINA ---
+        document.addEventListener('DOMContentLoaded', () => {
+            appHeaderEl = document.getElementById('appHeader');
+            lessonSidebarGlobalEl = document.getElementById('lessonSidebar');
+            overlayEl = document.getElementById('mobileMenuOverlay');
+            progressBarSidebarEl = document.getElementById('progressBarSidebar');
+            progressTextSidebarEl = document.getElementById('progressTextSidebar');
+            completionOverlayEl = document.getElementById('completionOverlay');
+            contentAreaEl = document.getElementById('contentArea');
+            sidebarMenuEl = document.getElementById('lessonSectionsMenu');
+
+            initializeSpeechAPI();
+            
+            const initAppVisualsAndContent = () => {
+                if (appInitialized) return; 
+                appInitialized = true;
+
+                updateLayoutAndScroll(); 
+                window.addEventListener('resize', () => { updateLayoutAndScroll(); setupIntersectionObserver(); });
+
+                // DIBUJAR TODO EL CONTENIDO DINÁMICO
+                displayDemonstrativesPractice();
+                displayNumbersVocabulary();
+                displayOrdinalNumbers();
+                displayArticlesGrid();
+                displayArticlesPractice();
+                displayOccupationsVocabulary();
+                displayOccupationsPractice();
+                displayInventoryStory();
+                displayQuiz();
+
+                populateSidebar(); 
+                setupIntersectionObserver();
+                updateProgressBar();
+                
+                if (initialWelcomePending) { playWelcomeMessage(); initialWelcomePending = false; }
+                
+                completionOverlayEl.addEventListener('click', (e) => { if (e.target.id === 'completionOverlay' || e.target.tagName === 'BUTTON') hideCompletionModal(); });
+            };
+
+            let voiceLoadAttempts = 0;
+            const maxVoiceLoadAttempts = 20; 
+            function tryInitWhenVoicesReady() {
+                voiceLoadAttempts++;
+                if (synth.getVoices().length > 0 || voiceLoadAttempts >= maxVoiceLoadAttempts) {
+                    getAndSetVoices();
+                    initAppVisualsAndContent();
+                } else {
+                    setTimeout(tryInitWhenVoicesReady, 150);
+                }
+            }
+            if (typeof synth.onvoiceschanged === "function") {
+                 synth.onvoiceschanged = () => { if (!appInitialized) { tryInitWhenVoicesReady(); synth.onvoiceschanged = null; } };
+                 setTimeout(tryInitWhenVoicesReady, 50); 
+            } else { tryInitWhenVoicesReady(); }
+        });
+        
+        function playWelcomeMessage() {
+             let welcomeMessage = "Hello and welcome to Lesson 4! Today, we will talk about objects, jobs, and numbers. Let's get started!";
+             speakPhrase(welcomeMessage, 'en-US');
+        }
+
+    </script>
+</body>
+</html>
