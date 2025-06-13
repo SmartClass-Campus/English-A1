@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartClass - Start Lesson 4: School Supplies & The World of Work</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap');
+
+        :root {
+            /* --- PALETA DE COLORES OFICIAL INTEGRADA --- */
+            --c-navy: #172C47;          /* 1. Azul Marino Oscuro (Principal) */
+            --c-mint: #2AE2C3;          /* 2. Menta Brillante (Acento 1) */
+            --c-ivory: #FFFAF0;         /* 3. Blanco Marfil (Fondo) */
+            --c-coral: #FF8079;         /* 4. Coral Suave (Acento 2) */
+            --c-slate: #6A8693;         /* 5. Gris Pizarra (Texto secundario) */
+            --c-orange: #FE6751;        /* 6. Naranja Brillante (Acento 3) */
+            --c-sky-blue: #2CAFEE;       /* 7. Azul Cielo (Acento 4) */
+
+            /* Variables de diseño estándar */
+            --font-principal: 'Outfit', sans-serif;
+            --font-titulos: 'Montserrat', sans-serif;
+            --shadow-md: 0 4px 6px -1px rgba(23, 44, 71, 0.07), 0 2px 4px -1px rgba(23, 44, 71, 0.05);
+            --shadow-lg: 0 10px 15px -3px rgba(23, 44, 71, 0.1), 0 4px 6px -2px rgba(23, 44, 71, 0.05);
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes popIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+        html { scroll-behavior: smooth; }
+        body { 
+            font-family: var(--font-principal); 
+            margin: 0; 
+            background-color: var(--c-ivory); /* Fondo de la paleta */
+            color: var(--c-navy); /* Texto principal de la paleta */
+            line-height: 1.6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .intro-wrapper {
+            max-width: 700px;
+            width: 100%;
+            text-align: center;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        header { 
+            background-color: var(--c-navy); 
+            color: white; 
+            padding: 15px 25px; 
+            text-align: center; 
+            border-radius: 12px; 
+            box-shadow: var(--shadow-md); 
+            margin-bottom: 25px; 
+        }
+        .logo { font-family: var(--font-titulos); font-size: 2em; font-weight: 700; }
+        
+        .intro-card {
+            background-color: #FFFFFF;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s forwards;
+            opacity: 0;
+            transform: scale(0.95);
+        }
+
+        .mission-icon {
+            font-size: 3.5em;
+            line-height: 1;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-family: var(--font-titulos);
+            font-size: 2.2em;
+            color: var(--c-navy);
+            margin: 0 0 5px 0;
+        }
+        
+        .lesson-subtitle {
+            font-family: var(--font-titulos);
+            font-size: 1.2em;
+            font-weight: 600;
+            color: var(--c-slate);
+            margin: 0 auto 20px auto;
+        }
+        
+        .intro-card p {
+            font-size: 1.1em;
+            color: var(--c-slate); /* Texto secundario de la paleta */
+            max-width: 550px;
+            margin: 0 auto 25px auto;
+        }
+
+        .objectives {
+            text-align: left;
+            margin: 30px auto;
+            max-width: 500px;
+        }
+
+        .objectives h2 {
+            font-family: var(--font-titulos);
+            font-size: 1.4em;
+            color: var(--c-navy);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .objectives h2 .icon { color: var(--c-mint); }
+
+        .objectives ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .objectives li {
+            display: flex;
+            align-items: center;
+            font-size: 1.05em;
+            color: var(--c-navy);
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        
+        .icon-bullet {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 4px;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        /* Asignación de colores de la paleta a cada ícono */
+        .objectives li:nth-child(1) .icon-bullet { background-color: var(--c-mint); }
+        .objectives li:nth-child(2) .icon-bullet { background-color: var(--c-sky-blue); }
+        .objectives li:nth-child(3) .icon-bullet { background-color: var(--c-orange); }
+        .objectives li:nth-child(4) .icon-bullet { background-color: var(--c-coral); }
+
+        .mission-meta {
+            margin-top: 30px;
+            font-size: 0.95em;
+            color: var(--c-slate);
+            font-weight: 500;
+        }
+
+        .start-button {
+            font-family: var(--font-principal);
+            background: linear-gradient(45deg, var(--c-mint), var(--c-sky-blue));
+            color: var(--c-navy);
+            border: none;
+            padding: 16px 40px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: 700;
+            transition: all 0.3s ease-out;
+            margin-top: 25px;
+            display: inline-block;
+            box-shadow: var(--shadow-lg);
+            text-decoration: none;
+        }
+        .start-button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 25px -5px rgba(42, 238, 195, 0.3);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="intro-wrapper">
+        <header>
+            <div class="logo">SMARTCLASS</div>
+        </header>
+
+        <div class="intro-card">
+            <div class="mission-icon">🎓</div>
+            <h1>Lesson 4: School Supplies & The World of Work</h1>
+            <p class="lesson-subtitle">Flipped Room</p>
+            
+            <!-- CONTENIDO EN ESPAÑOL -->
+            <p>¡Bienvenido/a a la Lección 4! En esta misión, ampliarás tu vocabulario para describir objetos y hablar sobre el fascinante mundo de las profesiones.</p>
+
+            <div class="objectives">
+                <h2><span class="icon">🎯</span> En esta misión, aprenderás a:</h2>
+                <ul>
+                    <li><span class="icon-bullet"></span>Identificar objetos cercanos y lejanos usando 'this, that, these, those'.</li>
+                    <li><span class="icon-bullet"></span>Contar y usar números hasta 1000, además de los números ordinales.</li>
+                    <li><span class="icon-bullet"></span>Utilizar los artículos 'a', 'an' y 'the' para hablar de personas y cosas.</li>
+                    <li><span class="icon-bullet"></span>Describir diferentes ocupaciones y profesiones.</li>
+                </ul>
+            </div>
+            <!-- FIN DEL CONTENIDO EN ESPAÑOL -->
+
+            <div class="mission-meta">
+                <span>Estimated duration: 20 minutes</span>
+            </div>
+
+            <a href="Index.html" class="start-button">
+                Start Flipped Room
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>
